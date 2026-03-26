@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f3efe6;
+  --foreground: #1f1b17;
+  --panel: rgba(255, 252, 247, 0.92);
+  --panel-strong: #fffdf9;
+  --line: rgba(114, 80, 47, 0.14);
+  --accent: #bf5b2c;
+  --accent-strong: #8f3f1c;
+  --muted: #6f6256;
+  --shadow: 0 24px 60px rgba(117, 79, 40, 0.12);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-barlow-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255, 214, 170, 0.75), transparent 28%),
+    radial-gradient(circle at top right, rgba(191, 91, 44, 0.12), transparent 24%),
+    linear-gradient(180deg, #fbf7f0 0%, #f3efe6 52%, #ece4d8 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-barlow-sans), "Helvetica Neue", "Arial Narrow", sans-serif;
+  letter-spacing: 0.01em;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.text-display,
+.text-data-heading {
+  font-family: var(--font-barlow-condensed), var(--font-barlow-sans), sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.text-data-heading {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.text-data-number {
+  font-family: var(--font-barlow-condensed), var(--font-barlow-sans), sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "ss01" 1;
+  letter-spacing: 0.03em;
+}
+
+.text-data-meta {
+  font-family: var(--font-barlow-sans), sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0.04em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(191, 91, 44, 0.18);
 }
