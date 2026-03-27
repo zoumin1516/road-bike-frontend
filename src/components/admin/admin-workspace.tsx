@@ -55,7 +55,7 @@ export function AdminWorkspace() {
     setCurrentUsername(null);
   }
 
-  function handleSaved(payload: SavedRecordPayload) {
+  function handleEntitySaved(payload: SavedRecordPayload) {
     setSelectedRecord((current) => {
       if (!current || current.id !== payload.id || current.type !== payload.type) return current;
       return {
@@ -65,6 +65,17 @@ export function AdminWorkspace() {
         meta: payload.meta,
         imageUrl: payload.imageUrl,
         facts: payload.facts,
+      };
+    });
+    setRefreshKey((value) => value + 1);
+  }
+
+  function handleMediaSaved(payload: { type: SelectedRecord["type"]; id: string; imageUrl?: string | null }) {
+    setSelectedRecord((current) => {
+      if (!current || current.id !== payload.id || current.type !== payload.type) return current;
+      return {
+        ...current,
+        imageUrl: payload.imageUrl,
       };
     });
     setRefreshKey((value) => value + 1);
@@ -86,12 +97,12 @@ export function AdminWorkspace() {
       </div>
       <div className="grid gap-6">
         <AdminRecordPreview record={selectedRecord} />
-        {selectedRecord?.type === "brand" ? <BrandEditorForm selectedRecord={selectedRecord} onSaved={handleSaved} /> : null}
-        {selectedRecord?.type === "model" ? <ModelEditorForm selectedRecord={selectedRecord} onSaved={handleSaved} /> : null}
-        {selectedRecord?.type === "build" ? <BuildEditorForm selectedRecord={selectedRecord} onSaved={handleSaved} /> : null}
-        {selectedRecord?.type === "component" ? <ComponentEditorForm selectedRecord={selectedRecord} onSaved={handleSaved} /> : null}
+        {selectedRecord?.type === "brand" ? <BrandEditorForm selectedRecord={selectedRecord} onSaved={handleEntitySaved} /> : null}
+        {selectedRecord?.type === "model" ? <ModelEditorForm selectedRecord={selectedRecord} onSaved={handleEntitySaved} /> : null}
+        {selectedRecord?.type === "build" ? <BuildEditorForm selectedRecord={selectedRecord} onSaved={handleEntitySaved} /> : null}
+        {selectedRecord?.type === "component" ? <ComponentEditorForm selectedRecord={selectedRecord} onSaved={handleEntitySaved} /> : null}
         <EntityEditorPanel selectedRecord={selectedRecord} />
-        <MediaManagerPanel selectedRecord={selectedRecord} onSaved={handleSaved} />
+        <MediaManagerPanel selectedRecord={selectedRecord} onSaved={handleMediaSaved} />
       </div>
     </div>
   );
