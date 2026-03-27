@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+function compactStrings(values: Array<string | null | undefined>): string[] {
+  return values.filter((value): value is string => Boolean(value));
+}
+
 import { updateBrandEntity } from "@/lib/api/admin";
 import { getBrandDetail } from "@/lib/api/brands";
 
@@ -95,9 +99,9 @@ export function BrandEditorForm({
         id: currentRecord.id,
         title: brandNameEn,
         subtitle: brandNameCn || countryRegion || null,
-        meta: [countryRegion, marketPositioning, salesModel].filter(Boolean).join(" · ") || null,
+        meta: compactStrings([countryRegion, marketPositioning, salesModel]).join(" · ") || null,
         imageUrl: currentRecord.imageUrl,
-        facts: [countryRegion, marketPositioning, salesModel].filter(Boolean),
+        facts: compactStrings([countryRegion, marketPositioning, salesModel]),
       });
       setMessage(result.message);
     } catch (error) {

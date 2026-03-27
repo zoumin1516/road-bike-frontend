@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+function compactStrings(values: Array<string | null | undefined>): string[] {
+  return values.filter((value): value is string => Boolean(value));
+}
+
 import { updateModelEntity } from "@/lib/api/admin";
 
 export function ModelEditorForm({
@@ -76,9 +80,9 @@ export function ModelEditorForm({
         id: currentRecord.id,
         title: modelName,
         subtitle: seriesName || bikeCategory || null,
-        meta: [frameMaterial, brakeType, currentGenerationYear].filter(Boolean).join(" · ") || null,
+        meta: compactStrings([frameMaterial, brakeType, currentGenerationYear]).join(" · ") || null,
         imageUrl: currentRecord.imageUrl,
-        facts: [frameMaterial, brakeType, currentGenerationYear].filter(Boolean),
+        facts: compactStrings([frameMaterial, brakeType, currentGenerationYear]),
       });
       setMessage(result.message);
     } catch (error) {

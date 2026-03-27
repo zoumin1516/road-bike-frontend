@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+function compactStrings(values: Array<string | null | undefined>): string[] {
+  return values.filter((value): value is string => Boolean(value));
+}
+
 import { updateComponentEntity } from "@/lib/api/admin";
 import { getComponentDetail } from "@/lib/api/components";
 
@@ -95,9 +99,9 @@ export function ComponentEditorForm({
         id: currentRecord.id,
         title: componentName,
         subtitle: brandName || series || null,
-        meta: [componentCategory, series, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null].filter(Boolean).join(" · ") || null,
+        meta: compactStrings([componentCategory, series, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null]).join(" · ") || null,
         imageUrl: currentRecord.imageUrl,
-        facts: [componentCategory, series, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null].filter(Boolean),
+        facts: compactStrings([componentCategory, series, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null]),
       });
       setMessage(result.message);
     } catch (error) {

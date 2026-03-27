@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+function compactStrings(values: Array<string | null | undefined>): string[] {
+  return values.filter((value): value is string => Boolean(value));
+}
+
 import { updateBuildEntity } from "@/lib/api/admin";
 import { getBuildDetail } from "@/lib/api/builds";
 
@@ -127,9 +131,9 @@ export function BuildEditorForm({
         id: currentRecord.id,
         title: buildName,
         subtitle: groupsetSeries || groupsetBrand || modelYear || null,
-        meta: [modelYear, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null, cockpitType].filter(Boolean).join(" · ") || null,
+        meta: compactStrings([modelYear, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null, cockpitType]).join(" · ") || null,
         imageUrl: currentRecord.imageUrl,
-        facts: [modelYear, cockpitType, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null].filter(Boolean),
+        facts: compactStrings([modelYear, cockpitType, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null]),
       });
       setMessage(result.message);
     } catch (error) {
