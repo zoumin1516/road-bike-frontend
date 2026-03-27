@@ -5,6 +5,7 @@ export interface SearchItem {
   id: string;
   title: string;
   subtitle: string;
+  image_url?: string | null;
 }
 
 export interface SearchResponse {

@@ -111,7 +111,7 @@ export default async function ModelsPage({
                 browseLabel="浏览全部车型"
               />
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-5 xl:grid-cols-2">
                 {data.items.map((model) => (
                   <ModelCard key={model.model_id} model={model} />
                 ))}

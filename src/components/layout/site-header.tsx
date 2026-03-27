@@ -6,6 +6,7 @@ const links = [
   { href: "/builds", label: "配置库" },
   { href: "/components", label: "零部件库" },
   { href: "/search", label: "搜索" },
+  { href: "/admin", label: "后台" },
 ];
 
 export function SiteHeader() {

@@ -146,7 +146,7 @@ export default async function BuildsPage({
                 browseLabel="浏览全部配置"
               />
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-5 xl:grid-cols-2">
                 {data.items.map((build) => (
                   <BuildCard key={build.build_id} build={build} />
                 ))}

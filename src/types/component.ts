@@ -8,6 +8,8 @@ export interface ComponentItem {
   msrp_currency?: string | null;
   msrp_price?: number | null;
   official_url?: string | null;
+  image_url?: string | null;
+  hero_image_url?: string | null;
   notes?: string | null;
 }
 

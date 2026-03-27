@@ -1,6 +1,8 @@
 import { apiFetch } from "@/lib/api/client";
 import type { BrandListResponse } from "@/types/brand";
 
+import type { BrandItem } from "@/types/brand";
+
 export async function getBrands(params?: {
   page?: number;
   page_size?: number;
@@ -24,4 +26,9 @@ export async function getBrands(params?: {
 
   const query = searchParams.toString();
   return apiFetch<BrandListResponse>(`/brands${query ? `?${query}` : ""}`);
+}
+
+export async function getBrandDetail(brandId: string) {
+  const response = await apiFetch<{ data: BrandItem }>(`/brands/${brandId}`);
+  return response.data;
 }

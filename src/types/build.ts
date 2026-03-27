@@ -17,6 +17,8 @@ export interface BuildItem {
   is_electronic_shifting: boolean;
   is_stock_complete_bike: boolean;
   official_build_url?: string | null;
+  image_url?: string | null;
+  hero_image_url?: string | null;
   notes?: string | null;
 }
 

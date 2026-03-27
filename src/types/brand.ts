@@ -8,6 +8,8 @@ export interface BrandItem {
   sales_model?: string | null;
   main_road_categories?: string | null;
   official_website?: string | null;
+  logo_url?: string | null;
+  hero_image_url?: string | null;
   notes?: string | null;
 }
 

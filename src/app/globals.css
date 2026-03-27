@@ -42,6 +42,16 @@ a {
   text-decoration: none;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .card-hover-glow {
+    transition: box-shadow 220ms ease, transform 220ms ease, border-color 220ms ease;
+  }
+
+  .card-hover-glow:hover {
+    box-shadow: 0 28px 70px rgba(117, 79, 40, 0.14);
+  }
+}
+
 h1,
 h2,
 h3,

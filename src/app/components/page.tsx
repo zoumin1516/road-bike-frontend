@@ -90,7 +90,7 @@ export default async function ComponentsPage({
                 browseLabel="浏览全部零部件"
               />
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-5 xl:grid-cols-2">
                 {data.items.map((component) => (
                   <ComponentCard key={component.component_id} component={component} />
                 ))}

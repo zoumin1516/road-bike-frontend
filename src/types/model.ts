@@ -11,6 +11,8 @@ export interface ModelItem {
   current_generation_year?: number | null;
   is_active: boolean;
   official_model_url?: string | null;
+  image_url?: string | null;
+  hero_image_url?: string | null;
   notes?: string | null;
 }
 

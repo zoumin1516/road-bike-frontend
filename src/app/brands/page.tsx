@@ -90,7 +90,7 @@ export default async function BrandsPage({
                 browseLabel="浏览全部品牌"
               />
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-5 xl:grid-cols-2">
                 {data.items.map((brand) => (
                   <BrandCard key={brand.brand_id} brand={brand} />
                 ))}

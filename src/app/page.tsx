@@ -92,12 +92,12 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-2">
           {quickLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`group rounded-[2rem] border border-[color:var(--line)] bg-linear-to-br ${item.accent} p-6 shadow-[var(--shadow)] transition hover:-translate-y-1`}
+              className={`group rounded-[2rem] border border-[color:var(--line)] bg-linear-to-br ${item.accent} p-6 shadow-[var(--shadow)] transition hover:-translate-y-1 sm:p-7 xl:min-h-[220px]`}
             >
               <h2 className="text-xl font-semibold text-stone-900 group-hover:text-[color:var(--accent-strong)]">{item.title}</h2>
               <p className="mt-3 text-sm leading-6 text-[color:var(--muted)]">{item.desc}</p>
