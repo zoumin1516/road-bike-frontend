@@ -21,6 +21,10 @@ type BrowserRecord = {
   sortValue?: string | null;
 };
 
+function compactStrings(values: Array<string | null | undefined>): string[] {
+  return values.filter((value): value is string => Boolean(value));
+}
+
 const entityOptions: { value: EntityType; label: string }[] = [
   { value: "brand", label: "品牌" },
   { value: "model", label: "车型" },
@@ -75,9 +79,9 @@ export function AdminRecordBrowser({
           id: item.brand_id,
           title: item.brand_name_en,
           subtitle: item.brand_name_cn || item.country_region,
-          meta: [item.country_region, item.market_positioning, item.sales_model].filter(Boolean).join(" · "),
-          details: [item.brand_type, item.main_road_categories, item.official_website].filter(Boolean),
-          facts: [item.country_region, item.market_positioning, item.sales_model].filter(Boolean),
+          meta: compactStrings([item.country_region, item.market_positioning, item.sales_model]).join(" · "),
+          details: compactStrings([item.brand_type, item.main_road_categories, item.official_website]),
+          facts: compactStrings([item.country_region, item.market_positioning, item.sales_model]),
           sortValue: item.brand_name_en,
           imageUrl: item.logo_url || item.hero_image_url,
         }));
@@ -90,9 +94,9 @@ export function AdminRecordBrowser({
           id: item.model_id,
           title: item.model_name,
           subtitle: item.series_name || item.bike_category,
-          meta: [item.frame_material, item.brake_type, item.current_generation_year?.toString()].filter(Boolean).join(" · "),
-          details: [item.bike_category, item.release_year_first?.toString(), item.official_model_url].filter(Boolean),
-          facts: [item.frame_material, item.brake_type, item.current_generation_year?.toString()].filter(Boolean),
+          meta: compactStrings([item.frame_material, item.brake_type, item.current_generation_year?.toString()]).join(" · "),
+          details: compactStrings([item.bike_category, item.release_year_first?.toString(), item.official_model_url]),
+          facts: compactStrings([item.frame_material, item.brake_type, item.current_generation_year?.toString()]),
           sortValue: item.current_generation_year?.toString() || item.model_name,
           imageUrl: item.image_url || item.hero_image_url,
         }));
@@ -105,9 +109,9 @@ export function AdminRecordBrowser({
           id: item.build_id,
           title: item.build_name,
           subtitle: item.groupset_series || item.groupset_brand || item.model_year?.toString(),
-          meta: [item.model_year?.toString(), item.msrp_price ? `${item.msrp_currency || "USD"} ${item.msrp_price}` : null, item.cockpit_type].filter(Boolean).join(" · "),
-          details: [item.wheel_brand, item.wheel_model, item.official_build_url].filter(Boolean),
-          facts: [item.model_year?.toString(), item.cockpit_type, item.msrp_price ? `${item.msrp_currency || "USD"} ${item.msrp_price}` : null].filter(Boolean),
+          meta: compactStrings([item.model_year?.toString(), item.msrp_price ? `${item.msrp_currency || "USD"} ${item.msrp_price}` : null, item.cockpit_type]).join(" · "),
+          details: compactStrings([item.wheel_brand, item.wheel_model, item.official_build_url]),
+          facts: compactStrings([item.model_year?.toString(), item.cockpit_type, item.msrp_price ? `${item.msrp_currency || "USD"} ${item.msrp_price}` : null]),
           sortValue: item.model_year?.toString() || item.build_name,
           imageUrl: item.image_url || item.hero_image_url,
         }));
@@ -120,9 +124,9 @@ export function AdminRecordBrowser({
           id: item.component_id,
           title: item.component_name,
           subtitle: item.brand_name || item.series,
-          meta: [item.component_category, item.series, item.msrp_price ? `${item.msrp_currency || "USD"} ${item.msrp_price}` : null].filter(Boolean).join(" · "),
-          details: [item.weight_g ? `${item.weight_g} g` : null, item.official_url].filter(Boolean),
-          facts: [item.component_category, item.series, item.msrp_price ? `${item.msrp_currency || "USD"} ${item.msrp_price}` : null].filter(Boolean),
+          meta: compactStrings([item.component_category, item.series, item.msrp_price ? `${item.msrp_currency || "USD"} ${item.msrp_price}` : null]).join(" · "),
+          details: compactStrings([item.weight_g ? `${item.weight_g} g` : null, item.official_url]),
+          facts: compactStrings([item.component_category, item.series, item.msrp_price ? `${item.msrp_currency || "USD"} ${item.msrp_price}` : null]),
           sortValue: item.msrp_price?.toString() || item.component_name,
           imageUrl: item.image_url || item.hero_image_url,
         }));
