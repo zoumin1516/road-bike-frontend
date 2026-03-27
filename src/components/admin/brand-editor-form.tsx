@@ -62,17 +62,24 @@ export function BrandEditorForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!selectedRecord || selectedRecord.type !== "brand") {
+      setMessage("请先选择一个品牌记录。");
+      return;
+    }
+
     const token = localStorage.getItem("rb_admin_token");
     if (!token) {
       setMessage("请先登录后台。");
       return;
     }
 
+    const currentRecord = selectedRecord;
+
     setLoading(true);
     setMessage(null);
 
     try {
-      const result = await updateBrandEntity(token, selectedRecord.id, {
+      const result = await updateBrandEntity(token, currentRecord.id, {
         brand_name_en: brandNameEn,
         brand_name_cn: brandNameCn || undefined,
         country_region: countryRegion || undefined,
@@ -85,11 +92,11 @@ export function BrandEditorForm({
       });
       onSaved?.({
         type: "brand",
-        id: selectedRecord.id,
+        id: currentRecord.id,
         title: brandNameEn,
         subtitle: brandNameCn || countryRegion || null,
         meta: [countryRegion, marketPositioning, salesModel].filter(Boolean).join(" · ") || null,
-        imageUrl: selectedRecord.imageUrl,
+        imageUrl: currentRecord.imageUrl,
         facts: [countryRegion, marketPositioning, salesModel].filter(Boolean),
       });
       setMessage(result.message);

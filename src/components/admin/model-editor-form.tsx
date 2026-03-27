@@ -43,17 +43,24 @@ export function ModelEditorForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!selectedRecord || selectedRecord.type !== "model") {
+      setMessage("请先选择一个车型记录。");
+      return;
+    }
+
     const token = localStorage.getItem("rb_admin_token");
     if (!token) {
       setMessage("请先登录后台。");
       return;
     }
 
+    const currentRecord = selectedRecord;
+
     setLoading(true);
     setMessage(null);
 
     try {
-      const result = await updateModelEntity(token, selectedRecord.id, {
+      const result = await updateModelEntity(token, currentRecord.id, {
         model_name: modelName,
         series_name: seriesName || undefined,
         bike_category: bikeCategory || undefined,
@@ -66,11 +73,11 @@ export function ModelEditorForm({
       });
       onSaved?.({
         type: "model",
-        id: selectedRecord.id,
+        id: currentRecord.id,
         title: modelName,
         subtitle: seriesName || bikeCategory || null,
         meta: [frameMaterial, brakeType, currentGenerationYear].filter(Boolean).join(" · ") || null,
-        imageUrl: selectedRecord.imageUrl,
+        imageUrl: currentRecord.imageUrl,
         facts: [frameMaterial, brakeType, currentGenerationYear].filter(Boolean),
       });
       setMessage(result.message);

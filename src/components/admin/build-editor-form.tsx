@@ -86,17 +86,24 @@ export function BuildEditorForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!selectedRecord || selectedRecord.type !== "build") {
+      setMessage("请先选择一个配置记录。");
+      return;
+    }
+
     const token = localStorage.getItem("rb_admin_token");
     if (!token) {
       setMessage("请先登录后台。");
       return;
     }
 
+    const currentRecord = selectedRecord;
+
     setLoading(true);
     setMessage(null);
 
     try {
-      const result = await updateBuildEntity(token, selectedRecord.id, {
+      const result = await updateBuildEntity(token, currentRecord.id, {
         build_name: buildName,
         model_year: modelYear ? Number(modelYear) : undefined,
         market_region: marketRegion || undefined,
@@ -117,11 +124,11 @@ export function BuildEditorForm({
       });
       onSaved?.({
         type: "build",
-        id: selectedRecord.id,
+        id: currentRecord.id,
         title: buildName,
         subtitle: groupsetSeries || groupsetBrand || modelYear || null,
         meta: [modelYear, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null, cockpitType].filter(Boolean).join(" · ") || null,
-        imageUrl: selectedRecord.imageUrl,
+        imageUrl: currentRecord.imageUrl,
         facts: [modelYear, cockpitType, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null].filter(Boolean),
       });
       setMessage(result.message);

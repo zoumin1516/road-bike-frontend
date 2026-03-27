@@ -62,17 +62,24 @@ export function ComponentEditorForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!selectedRecord || selectedRecord.type !== "component") {
+      setMessage("请先选择一个零部件记录。");
+      return;
+    }
+
     const token = localStorage.getItem("rb_admin_token");
     if (!token) {
       setMessage("请先登录后台。");
       return;
     }
 
+    const currentRecord = selectedRecord;
+
     setLoading(true);
     setMessage(null);
 
     try {
-      const result = await updateComponentEntity(token, selectedRecord.id, {
+      const result = await updateComponentEntity(token, currentRecord.id, {
         component_category: componentCategory,
         brand_name: brandName,
         component_name: componentName,
@@ -85,11 +92,11 @@ export function ComponentEditorForm({
       });
       onSaved?.({
         type: "component",
-        id: selectedRecord.id,
+        id: currentRecord.id,
         title: componentName,
         subtitle: brandName || series || null,
         meta: [componentCategory, series, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null].filter(Boolean).join(" · ") || null,
-        imageUrl: selectedRecord.imageUrl,
+        imageUrl: currentRecord.imageUrl,
         facts: [componentCategory, series, msrpPrice ? `${msrpCurrency || "USD"} ${msrpPrice}` : null].filter(Boolean),
       });
       setMessage(result.message);
