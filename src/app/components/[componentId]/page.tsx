@@ -3,9 +3,37 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ContextLinks } from "@/components/layout/context-links";
 import { DetailBadges } from "@/components/layout/detail-badges";
+import { DetailHeroHeader } from "@/components/layout/detail-hero-header";
+import { DetailHeroKpis } from "@/components/layout/detail-hero-kpis";
+import { DetailHeroProfileCard } from "@/components/layout/detail-hero-profile-card";
 import { DetailSection } from "@/components/layout/detail-section";
 import { DetailShell } from "@/components/layout/detail-shell";
+import { InlineExpandableText } from "@/components/layout/inline-expandable-text";
+import { JsonLd } from "@/components/layout/json-ld";
+import { SpecTable } from "@/components/layout/spec-table";
 import { getComponentDetail } from "@/lib/api/components";
+import { formatPrice, formatWeightG } from "@/lib/format";
+import { buildMetadata } from "@/lib/seo";
+import { breadcrumbSchema, detailPageSchema } from "@/lib/structured-data";
+
+export async function generateMetadata({ params }: { params: Promise<{ componentId: string }> }) {
+  const { componentId } = await params;
+  const component = await getComponentDetail(componentId).catch(() => null);
+
+  if (!component) {
+    return buildMetadata({
+      title: "零部件详情",
+      description: "公路车零部件详情页",
+      path: `/components/${componentId}`,
+    });
+  }
+
+  return buildMetadata({
+    title: `${component.component_name} 零部件详情`,
+    description: `${component.brand_name} ${component.component_name} 的重量、价格、系列和规格信息。`,
+    path: `/components/${componentId}`,
+  });
+}
 
 export default async function ComponentDetailPage({ params }: { params: Promise<{ componentId: string }> }) {
   const { componentId } = await params;
@@ -15,85 +43,98 @@ export default async function ComponentDetailPage({ params }: { params: Promise<
     notFound();
   }
 
+  const structuredData = [
+    breadcrumbSchema([
+      { name: "首页", path: "/" },
+      { name: "零部件库", path: "/components" },
+      { name: component.component_name, path: `/components/${componentId}` },
+    ]),
+    detailPageSchema({
+      title: `${component.component_name} 零部件详情`,
+      description: `${component.brand_name} ${component.component_name} 的重量、价格、系列和规格信息。`,
+      path: `/components/${componentId}`,
+    }),
+  ];
+
   return (
     <main className="min-h-screen">
-      <section className="mx-auto max-w-5xl px-6 py-12 sm:px-10 lg:px-12">
+      <JsonLd data={structuredData} />
+      <section className="mx-auto max-w-6xl px-6 py-12 sm:px-10 lg:px-12">
         <Breadcrumbs items={[{ label: "首页", href: "/" }, { label: "零部件库", href: "/components" }, { label: component.component_name }]} />
 
-        <div className="mt-6">
+        <div className="mt-6 space-y-4">
+          <ContextLinks
+            title="组件导航"
+            items={[
+              { label: "零部件列表", href: "/components" },
+              { label: `搜索 ${component.brand_name}`, href: `/search?q=${encodeURIComponent(component.brand_name)}&type=component` },
+              { label: "搜索页", href: `/search?q=${encodeURIComponent(component.component_name)}` },
+            ]}
+          />
           <DetailShell
             hero={
-              <>
-                <p className="text-data-meta text-[11px] font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)]">Component Detail</p>
-                <h1 className="text-data-heading mt-3 text-[2.7rem] leading-none text-stone-900 sm:text-[3.2rem]">{component.component_name}</h1>
-                <p className="mt-2 text-base text-[color:var(--muted)] sm:text-lg">{component.brand_name}</p>
-                <DetailBadges items={[component.component_category, component.series || ""]} />
-                {component.notes ? (
-                  <div className="mt-7 rounded-[1.4rem] bg-[rgba(255,255,255,0.64)] p-4">
-                    <h2 className="text-data-meta text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">备注</h2>
-                    <p className="mt-2.5 text-sm leading-6 text-stone-700 sm:text-[0.95rem]">{component.notes}</p>
-                  </div>
-                ) : null}
-                {component.official_url ? (
-                  <div className="mt-7">
+              <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)] xl:items-start">
+                <DetailHeroHeader
+                  eyebrow="Component Detail"
+                  title={component.component_name}
+                  subtitle={<span className="block truncate" title={component.brand_name}>{component.brand_name}</span>}
+                  badges={<DetailBadges items={[component.component_category, component.series || ""]} />}
+                  kpis={<DetailHeroKpis items={[
+                    { label: "品牌", value: component.brand_name },
+                    { label: "类别", value: component.component_category },
+                    { label: "重量", value: formatWeightG(component.weight_g) },
+                    { label: "价格", value: formatPrice(component.msrp_price, component.msrp_currency) },
+                  ]} />}
+                  extra={component.notes ? <p className="max-w-2xl text-[14px] leading-7 text-stone-600">{component.notes}</p> : undefined}
+                  cta={component.official_url ? (
                     <a
                       href={component.official_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex rounded-full bg-[color:var(--accent-strong)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[color:var(--accent)]"
+                      className="inline-flex rounded-full bg-stone-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-stone-700"
                     >
                       访问组件官网
                     </a>
-                  </div>
-                ) : null}
-              </>
+                  ) : undefined}
+                />
+                <DetailHeroProfileCard
+                  title="Component Profile"
+                  items={[
+                    { label: "品牌", value: component.brand_name, featured: true },
+                    { label: "系列", value: component.series || "-" },
+                    { label: "类别", value: component.component_category },
+                    { label: "组件 ID", value: component.component_id },
+                  ]}
+                />
+              </div>
             }
-            aside={
-              <ContextLinks
-                title="上下文跳转"
-                items={[
-                  { label: "返回零部件列表", href: "/components" },
-                  { label: `搜索同品牌：${component.brand_name}`, href: `/search?q=${encodeURIComponent(component.brand_name)}&type=component` },
-                  { label: "前往搜索页", href: `/search?q=${encodeURIComponent(component.component_name)}` },
-                ]}
-              />
-            }
+            aside={undefined}
           >
-            <DetailSection eyebrow="Specs" title="组件资料">
-              <div className="grid gap-5 md:grid-cols-2">
-                <div className="rounded-[1.4rem] bg-[rgba(255,255,255,0.66)] p-5">
-                  <h3 className="text-data-heading text-[1.45rem] leading-none text-stone-900">价格与参数</h3>
-                  <dl className="mt-4 space-y-3 text-sm text-stone-700">
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">重量</dt>
-                      <dd className="text-data-number mt-1 text-[1.2rem] font-bold leading-none text-stone-900">{component.weight_g ? `${component.weight_g} g` : "-"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">价格</dt>
-                      <dd className="text-data-number mt-1 text-[1.25rem] font-bold leading-none text-stone-900">
-                        {component.msrp_price ? `${component.msrp_currency || "USD"} ${component.msrp_price}` : "-"}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
+            {component.notes ? (
+              <DetailSection eyebrow="Overview" title="组件概述" first>
+                <InlineExpandableText label="组件说明" text={component.notes} />
+              </DetailSection>
+            ) : null}
 
-                <div className="rounded-[1.4rem] bg-[rgba(255,255,255,0.66)] p-5">
-                  <h3 className="text-data-heading text-[1.45rem] leading-none text-stone-900">组件信息</h3>
-                  <dl className="mt-4 space-y-3 text-sm text-stone-700">
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">组件 ID</dt>
-                      <dd className="mt-1 text-sm font-semibold text-stone-900">{component.component_id}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">类别</dt>
-                      <dd className="mt-1 text-sm font-semibold text-stone-900">{component.component_category}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">品牌</dt>
-                      <dd className="mt-1 text-sm font-semibold text-stone-900">{component.brand_name}</dd>
-                    </div>
-                  </dl>
-                </div>
+            <DetailSection eyebrow="Specifications" title="组件资料" first={!component.notes}>
+              <div className="grid gap-5 xl:grid-cols-2">
+                <SpecTable
+                  title="价格与参数"
+                  rows={[
+                    { label: "价格", value: formatPrice(component.msrp_price, component.msrp_currency) },
+                    { label: "重量", value: formatWeightG(component.weight_g) },
+                    { label: "系列", value: component.series || "-" },
+                  ]}
+                />
+                <SpecTable
+                  title="组件信息"
+                  rows={[
+                    { label: "组件 ID", value: component.component_id },
+                    { label: "类别", value: component.component_category },
+                    { label: "品牌", value: component.brand_name },
+                    { label: "官网", value: component.official_url ? <a href={component.official_url} target="_blank" rel="noreferrer" className="text-stone-900 underline-offset-4 hover:underline">访问链接</a> : "-" },
+                  ]}
+                />
               </div>
             </DetailSection>
           </DetailShell>

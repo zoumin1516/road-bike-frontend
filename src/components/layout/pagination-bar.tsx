@@ -37,11 +37,11 @@ export function PaginationBar({
   );
 
   return (
-    <div className="mt-7 rounded-[1.35rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3 shadow-[var(--shadow)]">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mt-5 rounded-[1rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-3.5 py-2.5 shadow-[var(--shadow)]">
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">Pagination</p>
-          <p className="mt-1 text-[12px] leading-5 text-[color:var(--muted)]">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">Pagination</p>
+          <p className="mt-0.5 text-[11px] leading-4.5 text-[color:var(--muted)]">
             {start}-{end} / 共 {pagination.total} 条
           </p>
         </div>
@@ -62,7 +62,7 @@ export function PaginationBar({
                 key={pageNumber}
                 href={buildPageHref(currentSearchParams, pageNumber, pagination.page_size)}
                 aria-current={active ? "page" : undefined}
-                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-[12px] font-medium transition ${
+                className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2.5 text-[11px] font-medium transition ${
                   active
                     ? "border border-[#7f3517] bg-[#8f3f1c] text-white shadow-[0_10px_20px_rgba(143,63,28,0.18)]"
                     : "border border-[color:var(--line)] text-stone-700 hover:border-[color:var(--accent)] hover:bg-white hover:text-[color:var(--accent-strong)]"

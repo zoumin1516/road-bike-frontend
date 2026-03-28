@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { CardMedia } from "@/components/layout/card-media";
 import type { SearchItem, SearchItemType } from "@/types/search";
 
 const TYPE_ORDER: SearchItemType[] = ["brand", "model", "build", "component"];
@@ -52,33 +51,19 @@ export function sortSearchTypes(types: SearchItemType[]) {
 
 export function SearchResultList({ items }: { items: SearchItem[] }) {
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => (
         <Link
           key={`${item.type}-${item.id}`}
           href={resolveSearchHref(item)}
-          className="card-hover-glow group grid min-h-[220px] gap-4 rounded-[1.7rem] border border-[color:var(--line)] bg-[linear-gradient(135deg,rgba(255,252,248,0.96),rgba(255,247,239,0.84))] p-5 shadow-[var(--shadow)] transition duration-300 hover:-translate-y-1 hover:border-[color:var(--accent)] sm:grid-cols-[minmax(0,1fr)_180px] sm:items-start"
+          className="card-hover-glow group rounded-[1.2rem] border border-[color:var(--line)] bg-white p-4 shadow-[var(--shadow)] transition duration-300 hover:-translate-y-1 hover:border-stone-400"
         >
-          <div className="min-w-0 flex-1">
-            <p className="text-data-meta text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--accent)]">Search Hit</p>
-            <h2 className="text-data-heading mt-2 text-[1.3rem] leading-none text-stone-900 group-hover:text-[color:var(--accent-strong)]" title={item.title}>
+          <div className="min-w-0">
+            <p className="text-data-meta text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">{resolveSearchTypeLabel(item.type)}</p>
+            <h2 className="text-data-heading mt-1.5 line-clamp-2 text-[1.05rem] font-semibold leading-tight text-stone-900 group-hover:text-stone-900" title={item.title}>
               {item.title}
             </h2>
-            <p className="mt-3 line-clamp-3 text-sm leading-6 text-[color:var(--muted)]">{item.subtitle}</p>
-          </div>
-          <div className="flex h-full flex-col justify-between gap-3 rounded-[1.2rem] border border-white/65 bg-white/70 p-3.5 backdrop-blur-sm">
-            <CardMedia
-              label="搜索结果预留图位"
-              tone="search"
-              imageUrl={item.image_url}
-              alt={`${item.title} visual`}
-            />
-            <span className="text-data-meta inline-flex w-fit rounded-full border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-stone-700">
-              {resolveSearchTypeLabel(item.type)}
-            </span>
-            <span className="text-data-meta text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-500 transition group-hover:text-[color:var(--accent-strong)]">
-              Open detail
-            </span>
+            <p className="mt-2 line-clamp-2 text-[12px] leading-5 text-[color:var(--muted)]">{item.subtitle}</p>
           </div>
         </Link>
       ))}

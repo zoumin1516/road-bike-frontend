@@ -10,6 +10,27 @@ export interface BrandItem {
   official_website?: string | null;
   logo_url?: string | null;
   hero_image_url?: string | null;
+  headquarters?: string | null;
+  founded_year?: string | null;
+  founder?: string | null;
+  parent_company?: string | null;
+  company_type?: string | null;
+  ownership_type?: string | null;
+  road_cycling_positioning?: string | null;
+  target_audience?: string | null;
+  price_tier?: string | null;
+  brand_slogan?: string | null;
+  brand_story?: string | null;
+  mission?: string | null;
+  core_values?: string | null;
+  core_technologies?: string | null;
+  r_and_d_capabilities?: string | null;
+  flagship_platforms?: string | null;
+  employee_count_range?: string | null;
+  annual_revenue_range?: string | null;
+  product_lines?: string | null;
+  road_product_lines?: string | null;
+  data_sources?: string | null;
   notes?: string | null;
 }
 

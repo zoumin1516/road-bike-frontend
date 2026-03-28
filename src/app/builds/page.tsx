@@ -1,12 +1,23 @@
 import { BuildCard } from "@/components/builds/build-card";
 import { ActiveFilters } from "@/components/layout/active-filters";
 import { EmptyResults } from "@/components/layout/empty-results";
+import { EntityTable } from "@/components/layout/entity-table";
 import { FilterSidebar } from "@/components/layout/filter-sidebar";
 import { PageIntro } from "@/components/layout/page-intro";
 import { PaginationBar } from "@/components/layout/pagination-bar";
+import { ResultsToolbar } from "@/components/layout/results-toolbar";
+import { ViewModeSwitch } from "@/components/layout/view-mode-switch";
 import { getBuilds } from "@/lib/api/builds";
 import { getFilterMeta } from "@/lib/api/meta";
+import { buildMetadata } from "@/lib/seo";
+import { formatPrice, formatYear } from "@/lib/format";
 import { toOptions } from "@/lib/utils/options";
+
+export const metadata = buildMetadata({
+  title: "配置库",
+  description: "按套件、轮组、电变和价格区间筛选公路车配置。",
+  path: "/builds",
+});
 
 export default async function BuildsPage({
   searchParams,
@@ -24,6 +35,7 @@ export default async function BuildsPage({
     sort?: string;
     page?: string;
     page_size?: string;
+    view?: string;
   }>;
 }) {
   const {
@@ -39,6 +51,7 @@ export default async function BuildsPage({
     sort,
     page,
     page_size,
+    view,
   } = await searchParams;
   const currentPage = Number(page || "1");
   const currentPageSize = Number(page_size || "12");
@@ -61,6 +74,8 @@ export default async function BuildsPage({
     getFilterMeta(),
   ]);
 
+  const currentView = view === "table" ? "table" : "card";
+
   const currentFilters = {
     keyword,
     groupset_brand,
@@ -74,6 +89,7 @@ export default async function BuildsPage({
     sort,
     page_size: String(currentPageSize),
     page: String(currentPage),
+    view: currentView,
     __sortOptions: "year_desc::年份新到旧||year_asc::年份旧到新||price_desc::价格高到低||price_asc::价格低到高||name_asc::名称 A-Z||name_desc::名称 Z-A",
   };
 
@@ -90,7 +106,7 @@ export default async function BuildsPage({
           ]}
         />
 
-        <div className="mt-7 grid gap-8 lg:grid-cols-[280px_1fr]">
+        <div className="mt-5 grid gap-6 lg:grid-cols-[260px_1fr]">
           <FilterSidebar
             title="配置筛选"
             values={currentFilters}
@@ -122,6 +138,11 @@ export default async function BuildsPage({
           />
 
           <div>
+            <ResultsToolbar
+              title="配置结果"
+              meta={`共 ${data.pagination.total} 条`}
+              controls={<ViewModeSwitch pathname="/builds" currentSearchParams={currentFilters} mode={currentView} />}
+            />
             <ActiveFilters
               currentSearchParams={currentFilters}
               labels={{
@@ -145,8 +166,28 @@ export default async function BuildsPage({
                 browseHref="/builds"
                 browseLabel="浏览全部配置"
               />
+            ) : currentView === "table" ? (
+              <EntityTable
+                items={data.items}
+                href={(build) => `/builds/${build.build_id}`}
+                columns={[
+                  {
+                    key: "name",
+                    label: "配置",
+                    render: (build) => (
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold text-stone-900">{build.build_name}</div>
+                        <div className="truncate text-[11px] text-[color:var(--muted)]">{build.build_id}</div>
+                      </div>
+                    ),
+                  },
+                  { key: "groupset", label: "套件", render: (build) => [build.groupset_brand, build.groupset_series].filter(Boolean).join(" ") || "-" },
+                  { key: "price", label: "价格", render: (build) => formatPrice(build.msrp_price, build.msrp_currency) },
+                  { key: "year", label: "年份", render: (build) => formatYear(build.model_year) },
+                ]}
+              />
             ) : (
-              <div className="grid gap-5 xl:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {data.items.map((build) => (
                   <BuildCard key={build.build_id} build={build} />
                 ))}

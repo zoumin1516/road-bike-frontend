@@ -25,8 +25,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Road Bike Database",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  title: {
+    default: "Road Bike Database",
+    template: "%s | Road Bike Database",
+  },
   description: "公路车品牌、车型、配置、套件的数据查询展示网站",
+  keywords: ["公路车", "road bike", "自行车数据库", "车型", "配置", "零部件"],
+  openGraph: {
+    title: "Road Bike Database",
+    description: "公路车品牌、车型、配置、套件的数据查询展示网站",
+    type: "website",
+    locale: "zh_CN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Road Bike Database",
+    description: "公路车品牌、车型、配置、套件的数据查询展示网站",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -35,9 +51,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   const shouldLoadUmami = Boolean(umamiUrl && umamiWebsiteId && umamiWebsiteId !== "change-me-after-creating-site");
 
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" data-scroll-behavior="smooth">
       <body
-        className={`${barlowSans.variable} ${barlowCondensed.variable} ${geistMono.variable} bg-stone-50 text-stone-900 antialiased`}
+        className={`${barlowSans.variable} ${barlowCondensed.variable} ${geistMono.variable} bg-white text-stone-900 antialiased`}
       >
         {shouldLoadUmami ? (
           <Script

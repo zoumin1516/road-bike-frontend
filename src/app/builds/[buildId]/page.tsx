@@ -3,9 +3,37 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ContextLinks } from "@/components/layout/context-links";
 import { DetailBadges } from "@/components/layout/detail-badges";
+import { DetailHeroHeader } from "@/components/layout/detail-hero-header";
+import { DetailHeroKpis } from "@/components/layout/detail-hero-kpis";
+import { DetailHeroProfileCard } from "@/components/layout/detail-hero-profile-card";
 import { DetailSection } from "@/components/layout/detail-section";
 import { DetailShell } from "@/components/layout/detail-shell";
+import { InlineExpandableText } from "@/components/layout/inline-expandable-text";
+import { JsonLd } from "@/components/layout/json-ld";
+import { SpecTable } from "@/components/layout/spec-table";
 import { getBuildDetail } from "@/lib/api/builds";
+import { formatPrice, formatWeightKg, formatYear } from "@/lib/format";
+import { buildMetadata } from "@/lib/seo";
+import { breadcrumbSchema, detailPageSchema } from "@/lib/structured-data";
+
+export async function generateMetadata({ params }: { params: Promise<{ buildId: string }> }) {
+  const { buildId } = await params;
+  const build = await getBuildDetail(buildId).catch(() => null);
+
+  if (!build) {
+    return buildMetadata({
+      title: "配置详情",
+      description: "公路车配置详情页",
+      path: `/builds/${buildId}`,
+    });
+  }
+
+  return buildMetadata({
+    title: `${build.build_name} 配置详情`,
+    description: `${build.build_name} 的年份、价格、套件、轮组和传动参数。`,
+    path: `/builds/${buildId}`,
+  });
+}
 
 export default async function BuildDetailPage({ params }: { params: Promise<{ buildId: string }> }) {
   const { buildId } = await params;
@@ -15,113 +43,103 @@ export default async function BuildDetailPage({ params }: { params: Promise<{ bu
     notFound();
   }
 
+  const structuredData = [
+    breadcrumbSchema([
+      { name: "首页", path: "/" },
+      { name: "配置库", path: "/builds" },
+      { name: build.build_name, path: `/builds/${buildId}` },
+    ]),
+    detailPageSchema({
+      title: `${build.build_name} 配置详情`,
+      description: `${build.build_name} 的年份、价格、套件、轮组和传动参数。`,
+      path: `/builds/${buildId}`,
+    }),
+  ];
+
+  const marketRows = [
+    { label: "年份", value: formatYear(build.model_year) },
+    { label: "价格", value: formatPrice(build.msrp_price, build.msrp_currency) },
+    { label: "地区", value: build.market_region || "-" },
+    { label: "整车在售", value: build.is_stock_complete_bike ? "是" : "否" },
+  ];
+
+  const drivetrainRows = [
+    { label: "套件", value: [build.groupset_brand, build.groupset_series].filter(Boolean).join(" ") || "-" },
+    { label: "轮组", value: [build.wheel_brand, build.wheel_model].filter(Boolean).join(" ") || "-" },
+    { label: "功率计", value: build.power_meter || "-" },
+    { label: "座舱类型", value: build.cockpit_type || "-" },
+    { label: "电子变速", value: build.is_electronic_shifting ? "是" : "否" },
+    { label: "碟刹", value: build.is_disc ? "是" : "否" },
+    { label: "标称重量", value: formatWeightKg(build.claimed_weight_kg) },
+  ];
+
   return (
     <main className="min-h-screen">
-      <section className="mx-auto max-w-5xl px-6 py-12 sm:px-10 lg:px-12">
+      <JsonLd data={structuredData} />
+      <section className="mx-auto max-w-6xl px-6 py-12 sm:px-10 lg:px-12">
         <Breadcrumbs items={[{ label: "首页", href: "/" }, { label: "配置库", href: "/builds" }, { label: build.build_name }]} />
 
-        <div className="mt-6">
+        <div className="mt-6 space-y-4">
+          <ContextLinks
+            title="配置导航"
+            items={[
+              { label: "配置列表", href: "/builds" },
+              { label: `车型 ${build.model_id}`, href: `/models/${build.model_id}` },
+              {
+                label: `搜索 ${build.groupset_brand || "套件"}`,
+                href: `/search?q=${encodeURIComponent(build.groupset_brand || build.groupset_series || build.build_name)}`,
+              },
+            ]}
+          />
           <DetailShell
             hero={
-              <>
-                <p className="text-data-meta text-[11px] font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)]">Build Detail</p>
-                <h1 className="text-data-heading mt-3 text-[2.7rem] leading-none text-stone-900 sm:text-[3.2rem]">{build.build_name}</h1>
-                <p className="text-data-meta mt-2 text-[13px] font-semibold tracking-[0.06em] text-[color:var(--muted)]">车型 ID：{build.model_id}</p>
-                <DetailBadges items={[build.groupset_brand || "", build.groupset_series || "", build.cockpit_type || ""]} />
-                {build.notes ? (
-                  <div className="mt-7 rounded-[1.4rem] bg-[rgba(255,255,255,0.64)] p-4">
-                    <h2 className="text-data-meta text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--accent)]">备注</h2>
-                    <p className="mt-2.5 text-sm leading-6 text-stone-700 sm:text-[0.95rem]">{build.notes}</p>
-                  </div>
-                ) : null}
-                {build.official_build_url ? (
-                  <div className="mt-7">
+              <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)] xl:items-start">
+                <DetailHeroHeader
+                  eyebrow="Build Detail"
+                  title={build.build_name}
+                  subtitle={<span className="block truncate" title={build.model_id}>车型 ID：{build.model_id}</span>}
+                  badges={<DetailBadges items={[build.groupset_brand || "", build.groupset_series || "", build.cockpit_type || ""]} />}
+                  kpis={<DetailHeroKpis items={[
+                    { label: "年份", value: formatYear(build.model_year) },
+                    { label: "价格", value: formatPrice(build.msrp_price, build.msrp_currency) },
+                    { label: "电子变速", value: build.is_electronic_shifting ? "是" : "否" },
+                    { label: "碟刹", value: build.is_disc ? "是" : "否" },
+                  ]} />}
+                  extra={build.notes ? <p className="max-w-2xl text-[14px] leading-7 text-stone-600">{build.notes}</p> : undefined}
+                  cta={build.official_build_url ? (
                     <a
                       href={build.official_build_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex rounded-full bg-[color:var(--accent-strong)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[color:var(--accent)]"
+                      className="inline-flex rounded-full bg-stone-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-stone-700"
                     >
                       访问配置官网
                     </a>
-                  </div>
-                ) : null}
-              </>
-            }
-            aside={
-              <ContextLinks
-                title="上下文跳转"
-                items={[
-                  { label: "返回配置列表", href: "/builds" },
-                  { label: `前往车型详情：${build.model_id}`, href: `/models/${build.model_id}` },
-                  {
-                    label: `搜索同套件：${build.groupset_brand || "套件"}`,
-                    href: `/search?q=${encodeURIComponent(build.groupset_brand || build.groupset_series || build.build_name)}`,
-                  },
-                ]}
-              />
-            }
-          >
-            <DetailSection eyebrow="Specs" title="配置参数">
-              <div className="grid gap-5 md:grid-cols-2">
-                <div className="rounded-[1.4rem] bg-[rgba(255,255,255,0.66)] p-5">
-                  <h3 className="text-data-heading text-[1.45rem] leading-none text-stone-900">价格与年份</h3>
-                  <dl className="mt-4 space-y-3 text-sm text-stone-700">
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">年份</dt>
-                      <dd className="text-data-number mt-1 text-[1.2rem] font-bold leading-none text-stone-900">{build.model_year || "-"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">地区</dt>
-                      <dd className="mt-1 text-sm font-semibold text-stone-900">{build.market_region || "-"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">价格</dt>
-                      <dd className="text-data-number mt-1 text-[1.25rem] font-bold leading-none text-stone-900">
-                        {build.msrp_price ? `${build.msrp_currency || "USD"} ${build.msrp_price}` : "-"}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-
-                <div className="rounded-[1.4rem] bg-[rgba(255,255,255,0.66)] p-5">
-                  <h3 className="text-data-heading text-[1.45rem] leading-none text-stone-900">传动与轮组</h3>
-                  <dl className="mt-4 space-y-3 text-sm text-stone-700">
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">套件</dt>
-                      <dd className="mt-1 text-sm font-semibold text-stone-900">
-                        {[build.groupset_brand, build.groupset_series].filter(Boolean).join(" ") || "-"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">轮组</dt>
-                      <dd className="mt-1 text-sm font-semibold text-stone-900">
-                        {[build.wheel_brand, build.wheel_model].filter(Boolean).join(" ") || "-"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">功率计</dt>
-                      <dd className="mt-1 text-sm font-semibold text-stone-900">{build.power_meter || "-"}</dd>
-                    </div>
-                  </dl>
-                </div>
+                  ) : undefined}
+                />
+                <DetailHeroProfileCard
+                  title="Build Profile"
+                  items={[
+                    { label: "车型归属", value: build.model_id, featured: true },
+                    { label: "地区", value: build.market_region || "-" },
+                    { label: "套件", value: [build.groupset_brand, build.groupset_series].filter(Boolean).join(" ") || "-" },
+                    { label: "轮组", value: [build.wheel_brand, build.wheel_model].filter(Boolean).join(" ") || "-" },
+                  ]}
+                />
               </div>
+            }
+            aside={undefined}
+          >
+            {build.notes ? (
+              <DetailSection eyebrow="Overview" title="配置概述" first>
+                <InlineExpandableText label="配置说明" text={build.notes} />
+              </DetailSection>
+            ) : null}
 
-              <div className="mt-5 grid gap-4 md:grid-cols-3">
-                <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--panel-strong)] p-4">
-                  <p className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">电子变速</p>
-                  <p className="text-data-number mt-2 text-[1.2rem] font-bold leading-none text-stone-900">{build.is_electronic_shifting ? "是" : "否"}</p>
-                </div>
-                <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--panel-strong)] p-4">
-                  <p className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">碟刹</p>
-                  <p className="text-data-number mt-2 text-[1.2rem] font-bold leading-none text-stone-900">{build.is_disc ? "是" : "否"}</p>
-                </div>
-                <div className="rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--panel-strong)] p-4">
-                  <p className="text-data-meta text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">标称重量</p>
-                  <p className="text-data-number mt-2 text-[1.2rem] font-bold leading-none text-stone-900">
-                    {build.claimed_weight_kg ? `${build.claimed_weight_kg} kg` : "-"}
-                  </p>
-                </div>
+            <DetailSection eyebrow="Specifications" title="配置参数" first={!build.notes}>
+              <div className="grid gap-5 xl:grid-cols-2">
+                <SpecTable title="价格与市场" rows={marketRows} />
+                <SpecTable title="传动与整备" rows={drivetrainRows} />
               </div>
             </DetailSection>
           </DetailShell>

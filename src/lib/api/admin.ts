@@ -1,15 +1,17 @@
-import { siteConfig } from "@/lib/constants/site";
-
 export type AdminLoginResponse = {
   access_token: string;
   token_type: string;
 };
 
+export function getAdminApiBaseUrl() {
+  return "/api";
+}
+
 export async function loginAdmin(username: string, password: string) {
   let response: Response;
 
   try {
-    response = await fetch(`${siteConfig.apiBaseUrl}/auth/login`, {
+    response = await fetch(`${getAdminApiBaseUrl()}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +57,7 @@ export async function updateComponentMedia(token: string, componentId: string, p
 }
 
 export async function getCurrentAdmin(token: string) {
-  const response = await fetch(`${siteConfig.apiBaseUrl}/auth/me`, {
+  const response = await fetch(`${getAdminApiBaseUrl()}/auth/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -80,10 +82,31 @@ export async function updateBrandEntity(
     sales_model?: string;
     main_road_categories?: string;
     official_website?: string;
+    headquarters?: string;
+    founded_year?: string;
+    founder?: string;
+    parent_company?: string;
+    company_type?: string;
+    ownership_type?: string;
+    road_cycling_positioning?: string;
+    target_audience?: string;
+    price_tier?: string;
+    brand_slogan?: string;
+    brand_story?: string;
+    mission?: string;
+    core_values?: string;
+    core_technologies?: string;
+    r_and_d_capabilities?: string;
+    flagship_platforms?: string;
+    employee_count_range?: string;
+    annual_revenue_range?: string;
+    product_lines?: string;
+    road_product_lines?: string;
+    data_sources?: string;
     notes?: string;
   },
 ) {
-  const response = await fetch(`${siteConfig.apiBaseUrl}/admin/entities/brands/${brandId}`, {
+  const response = await fetch(`${getAdminApiBaseUrl()}/admin/entities/brands/${brandId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -114,7 +137,7 @@ export async function updateModelEntity(
     notes?: string;
   },
 ) {
-  const response = await fetch(`${siteConfig.apiBaseUrl}/admin/entities/models/${modelId}`, {
+  const response = await fetch(`${getAdminApiBaseUrl()}/admin/entities/models/${modelId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -153,7 +176,7 @@ export async function updateBuildEntity(
     notes?: string;
   },
 ) {
-  const response = await fetch(`${siteConfig.apiBaseUrl}/admin/entities/builds/${buildId}`, {
+  const response = await fetch(`${getAdminApiBaseUrl()}/admin/entities/builds/${buildId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -184,7 +207,7 @@ export async function updateComponentEntity(
     notes?: string;
   },
 ) {
-  const response = await fetch(`${siteConfig.apiBaseUrl}/admin/entities/components/${componentId}`, {
+  const response = await fetch(`${getAdminApiBaseUrl()}/admin/entities/components/${componentId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -201,7 +224,7 @@ export async function updateComponentEntity(
 }
 
 async function adminFetch(token: string, path: string, body: object) {
-  const response = await fetch(`${siteConfig.apiBaseUrl}${path}`, {
+  const response = await fetch(`${getAdminApiBaseUrl()}${path}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

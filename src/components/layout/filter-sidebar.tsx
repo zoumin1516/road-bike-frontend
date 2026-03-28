@@ -23,13 +23,13 @@ interface InputFilterField {
 type FilterField = SelectFilterField | InputFilterField;
 
 const fieldClassName =
-  "h-8.5 w-full rounded-lg border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-2.5 text-[12px] font-medium text-stone-700 outline-none transition duration-200 placeholder:text-stone-400 hover:border-[rgba(143,63,28,0.22)] hover:bg-white focus:border-[color:var(--accent)] focus:bg-white focus-visible:ring-2 focus-visible:ring-[rgba(191,91,44,0.12)] disabled:cursor-not-allowed disabled:border-[rgba(114,80,47,0.08)] disabled:bg-[rgba(255,253,249,0.58)] disabled:text-stone-400 disabled:placeholder:text-stone-300";
+  "h-8 w-full rounded-lg border border-[color:var(--line)] bg-white px-2.5 text-[11px] font-medium text-stone-700 outline-none transition duration-200 placeholder:text-stone-400 hover:border-stone-400 focus:border-stone-900 focus:bg-white focus-visible:ring-2 focus-visible:ring-[rgba(17,17,17,0.08)] disabled:cursor-not-allowed disabled:border-stone-200 disabled:bg-stone-50 disabled:text-stone-400 disabled:placeholder:text-stone-300";
 
 const primaryButtonClassName =
-  "group relative inline-flex h-9 flex-1 items-center justify-center overflow-hidden rounded-lg border border-[#8f3f1c] bg-[#9d4a24] px-3 text-[12px] font-semibold tracking-[0.03em] text-white shadow-[0_8px_16px_rgba(143,63,28,0.16)] transition duration-200 hover:border-[#bf5b2c] hover:bg-[#bf5b2c] hover:shadow-[0_10px_20px_rgba(191,91,44,0.2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(191,91,44,0.2)] disabled:cursor-not-allowed disabled:border-[#c9b8ac] disabled:bg-[#d8cec6] disabled:text-[rgba(255,255,255,0.74)] disabled:shadow-none";
+  "group relative inline-flex h-8.5 flex-1 items-center justify-center overflow-hidden rounded-lg border border-stone-900 bg-stone-900 px-3 text-[11px] font-semibold tracking-[0.03em] text-white shadow-[0_8px_16px_rgba(17,17,17,0.12)] transition duration-200 hover:border-stone-700 hover:bg-stone-700 hover:shadow-[0_10px_20px_rgba(17,17,17,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(17,17,17,0.12)] disabled:cursor-not-allowed disabled:border-stone-300 disabled:bg-stone-300 disabled:text-[rgba(255,255,255,0.74)] disabled:shadow-none";
 
 const secondaryButtonClassName =
-  "inline-flex h-9 items-center justify-center rounded-lg border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-3 text-[12px] font-medium text-stone-700 transition duration-200 hover:border-[color:var(--accent)] hover:bg-white hover:text-[color:var(--accent-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(191,91,44,0.12)] disabled:cursor-not-allowed disabled:border-[rgba(114,80,47,0.08)] disabled:bg-[rgba(255,253,249,0.58)] disabled:text-stone-400";
+  "inline-flex h-8.5 items-center justify-center rounded-lg border border-[color:var(--line)] bg-white px-3 text-[11px] font-medium text-stone-700 transition duration-200 hover:border-stone-400 hover:bg-stone-50 hover:text-stone-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(17,17,17,0.08)] disabled:cursor-not-allowed disabled:border-stone-200 disabled:bg-stone-50 disabled:text-stone-400";
 
 export function FilterSidebar({
   title,
@@ -43,14 +43,14 @@ export function FilterSidebar({
   submitLabel?: string;
 }) {
   return (
-    <aside className="rounded-[1.2rem] border border-[color:var(--line)] bg-[color:var(--panel)] p-3.5 shadow-[var(--shadow)] lg:sticky lg:top-20 lg:h-fit">
+    <aside className="rounded-[0.95rem] border border-[color:var(--line)] bg-[color:var(--panel)] p-3 shadow-[var(--shadow)] lg:sticky lg:top-20 lg:h-fit">
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--accent)]">Filters</p>
-        <h2 className="mt-1 text-base font-semibold tracking-tight text-stone-900">{title}</h2>
-        <p className="mt-1 text-[11px] leading-4.5 text-[color:var(--muted)]">按关键词、属性和价格快速收窄范围。</p>
+        <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[color:var(--accent)]">Filters</p>
+        <h2 className="mt-1 text-[14px] font-semibold tracking-tight text-stone-900">{title}</h2>
+        <p className="mt-1 text-[10px] leading-4 text-[color:var(--muted)]">按关键词、属性和价格快速收窄范围。</p>
       </div>
 
-      <form className="mt-3 space-y-3" method="get">
+      <form className="mt-2.5 space-y-2.5" method="get">
         {fields.map((field) => (
           <div key={field.name}>
             <label htmlFor={field.name} className="mb-1 block text-[11px] font-medium text-stone-700">
@@ -120,9 +120,9 @@ export function FilterSidebar({
 
         <div className="flex gap-2 pt-0.5">
           <button type="submit" className={primaryButtonClassName}>
-            <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.18),transparent_42%,rgba(255,255,255,0.06))] opacity-100 transition duration-200 group-hover:opacity-90" />
+            <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),transparent_42%,rgba(255,255,255,0.04))] opacity-100 transition duration-200 group-hover:opacity-90" />
             <span className="relative flex items-center gap-1.5 text-white">
-              <span className="inline-block h-2 w-2 rounded-full bg-[#ffd7b8] shadow-[0_0_0_3px_rgba(255,215,184,0.18)]" />
+              <span className="inline-block h-2 w-2 rounded-full bg-white/80 shadow-[0_0_0_3px_rgba(255,255,255,0.08)]" />
               {submitLabel}
             </span>
           </button>

@@ -50,6 +50,23 @@ export function AdminWorkspace() {
       });
   }, []);
 
+  async function handleLoggedIn() {
+    const token = localStorage.getItem("rb_admin_token");
+    if (!token) {
+      setCurrentUsername(null);
+      return;
+    }
+
+    try {
+      const data = await getCurrentAdmin(token);
+      setCurrentUsername(data.username);
+    } catch {
+      localStorage.removeItem("rb_admin_token");
+      setCurrentUsername(null);
+      throw new Error("登录成功但令牌校验失败，请检查后端服务和鉴权配置。");
+    }
+  }
+
   function handleLogout() {
     localStorage.removeItem("rb_admin_token");
     setCurrentUsername(null);
@@ -85,7 +102,7 @@ export function AdminWorkspace() {
     <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
       <div className="grid gap-6">
         <AdminLoginPanel
-          onLoggedIn={setCurrentUsername}
+          onLoggedIn={handleLoggedIn}
           currentUsername={currentUsername}
           onLogout={handleLogout}
         />

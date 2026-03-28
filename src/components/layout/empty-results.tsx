@@ -26,9 +26,9 @@ export function EmptyResults({
   browseLabel: string;
 }) {
   return (
-    <div className="rounded-[1.8rem] border border-dashed border-[rgba(143,63,28,0.26)] bg-[linear-gradient(135deg,rgba(255,252,248,0.96),rgba(255,246,236,0.9))] px-6 py-10 text-center shadow-[var(--shadow)] sm:px-8">
+    <div className="rounded-[1.2rem] border border-dashed border-[color:var(--line)] bg-white px-6 py-8 text-center shadow-[var(--shadow)] sm:px-8">
       <p className="text-data-meta text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--accent)]">No Results</p>
-      <h3 className="text-data-heading mt-3 text-[2rem] leading-none text-stone-900">{title}</h3>
+      <h3 className="text-data-heading mt-3 text-[1.75rem] font-semibold leading-none text-stone-900">{title}</h3>
       <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-[color:var(--muted)]">{description}</p>
 
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
